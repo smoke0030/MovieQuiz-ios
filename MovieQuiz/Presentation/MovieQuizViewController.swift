@@ -1,8 +1,9 @@
 import UIKit
 
 final class MovieQuizViewController: UIViewController {
-    // MARK: - Lifecycle
     
+    private let currentQuestionIndex = 0
+    private var correctAnswers = 0
     private let questions: [QuizQuestion] = [
         QuizQuestion(image: "The Godfather", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: true),
         QuizQuestion(image: "The Dark Knight", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: true),
@@ -23,6 +24,8 @@ final class MovieQuizViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        let currentQuestion = questions[currentQuestionIndex]
+        show(quiz: convert(model: questions[currentQuestionIndex]))
     }
     
     @IBAction private func yesButtonClicked(_ sender: UIButton) {
@@ -34,6 +37,18 @@ final class MovieQuizViewController: UIViewController {
         
     }
     
+    private func convert(model: QuizQuestion) -> QuizStepViewModel {
+        let questionStep = QuizStepViewModel(image: UIImage(named: model.image) ?? UIImage(),
+                                             question: model.text,
+                                             questionNumber: "\(currentQuestionIndex + 1)/\(questions.count)")
+        return questionStep
+    }
+    private func show(quiz step: QuizStepViewModel) {
+        imageView.image = step.image
+        textLabel.text = step.question
+        counterLabel.text = step.questionNumber
+    }
+    
     
     struct QuizQuestion {
         let image: String
@@ -41,6 +56,19 @@ final class MovieQuizViewController: UIViewController {
         let correctAnswer: Bool
     }
     
+    // для состояния "Вопрос показан"
+    struct QuizStepViewModel {
+      let image: UIImage
+      let question: String
+      let questionNumber: String
+    }
+
+    // для состояния "Результат квиза"
+    struct QuizResultsViewModel {
+      let title: String
+      let text: String
+      let buttonText: String
+    }
     
   
 }
