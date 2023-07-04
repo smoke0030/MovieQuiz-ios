@@ -16,14 +16,19 @@ final class MovieQuizViewController: UIViewController {
         QuizQuestion(image: "Tesla", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: false),
         QuizQuestion(image: "Vivarium", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: false)]
     
-    
-    
     @IBOutlet private var imageView: UIImageView!
     @IBOutlet private var counterLabel: UILabel!
     @IBOutlet private var textLabel: UILabel!
+    @IBOutlet weak var noButtonLabel: UIButton!
+    @IBOutlet weak var yesButtonLabel: UIButton!
+    
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        return .lightContent
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        imageView.layer.cornerRadius = 20
         let currentQuestion = questions[currentQuestionIndex]
         show(quiz: convert(model: currentQuestion))
     }
@@ -31,7 +36,6 @@ final class MovieQuizViewController: UIViewController {
     @IBAction private func yesButtonClicked(_ sender: UIButton) {
         let currentQuestion = questions[currentQuestionIndex]
         let givenAnswer = true
-        
         showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
     }
     
@@ -39,7 +43,6 @@ final class MovieQuizViewController: UIViewController {
     @IBAction private func noButtonClicked(_ sender: UIButton) {
         let currentQuestion = questions[currentQuestionIndex]
         let givenAnswer = false
-        
         showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
     }
     
@@ -67,8 +70,6 @@ final class MovieQuizViewController: UIViewController {
             let firstQuestion = self.questions[self.currentQuestionIndex]
             self.show(quiz: self.convert(model: firstQuestion))
             self.imageView.layer.borderColor = nil
-            
-            
         }
         alert.addAction(action)
         self.present(alert, animated: true, completion: nil)
@@ -78,13 +79,19 @@ final class MovieQuizViewController: UIViewController {
         if isCorrect == true {
             correctAnswers += 1
         }
+        yesButtonLabel.isEnabled = false
+        noButtonLabel.isEnabled = false
         imageView.layer.masksToBounds = true
         imageView.layer.borderWidth = 8
-        imageView.layer.cornerRadius = 20
         imageView.layer.borderColor = isCorrect ? UIColor.ypGreen.cgColor : UIColor.ypRed.cgColor
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
             self.showNextQuestionOrResult()
+            self.imageView.layer.borderWidth = 0
+            self.imageView.layer.borderColor = nil
+            self.yesButtonLabel.isEnabled = true
+            self.noButtonLabel.isEnabled = true
+            
         }
         
         
@@ -96,42 +103,35 @@ final class MovieQuizViewController: UIViewController {
             let viewModel = QuizResultsViewModel(title: "Этот раунд окончен",
                                                  text: text,
                                                  buttonText: "Сыграть еще раз")
-            
             show(quiz: viewModel)
           
             
         } else {
             currentQuestionIndex += 1
-            
             let nextQuestion = questions[currentQuestionIndex]
             show(quiz: convert(model: nextQuestion))
-            
-            
         }
     }
     
-    
-    struct QuizQuestion {
+    private struct QuizQuestion {
         let image: String
         let text: String
         let correctAnswer: Bool
     }
     
-    // для состояния "Вопрос показан"
-    struct QuizStepViewModel {
+    /// для состояния "Вопрос показан"
+    private struct QuizStepViewModel {
       let image: UIImage
       let question: String
       let questionNumber: String
     }
 
-    // для состояния "Результат квиза"
-    struct QuizResultsViewModel {
+    /// для состояния "Результат квиза"
+    private struct QuizResultsViewModel {
       let title: String
       let text: String
       let buttonText: String
     }
-    
-  
 }
 
 /*
