@@ -91,10 +91,7 @@ final class MovieQuizViewController: UIViewController {
             self.imageView.layer.borderColor = nil
             self.yesButtonLabel.isEnabled = true
             self.noButtonLabel.isEnabled = true
-            
         }
-        
-        
     }
     
     private func showNextQuestionOrResult() {
@@ -104,8 +101,6 @@ final class MovieQuizViewController: UIViewController {
                                                  text: text,
                                                  buttonText: "Сыграть еще раз")
             show(quiz: viewModel)
-          
-            
         } else {
             currentQuestionIndex += 1
             let nextQuestion = questions[currentQuestionIndex]
