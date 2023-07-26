@@ -29,17 +29,6 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         imageView.layer.cornerRadius = 20
         questionFactory = QuestionFactory(delegate: self)
         questionFactory?.requestNextQuestion()
-//        var documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
-//        let fileName = "top250MoviesIMDB.json"
-//        documentsURL.appendPathComponent(fileName)
-//        let jsonString = try? String(contentsOf: documentsURL)
-//        guard let data = jsonString?.data(using: .utf8) else { return }
-//        do {
-//            let result = try JSONDecoder().decode(Top.self, from: data)
-//        } catch {
-//            print("failed to parse \(error.localizedDescription)")
-//        }
-        
         statisticService = StatisticServiceImplementation()
     }
     
@@ -137,8 +126,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
                 statisticService.store(correct: correctAnswers, total: questionsAmount)
                 
                 let bestGame = statisticService.bestGame
-                let dateFormatter = DateFormatter()
-                dateFormatter.dateFormat = "dd.MM.YYYY HH:mm"
+                
                 
                 let text = "Ваш результат: \(correctAnswers) / 10\n" +
                 "Количество сыгранных игр: \(statisticService.gamesCount)\n" +
@@ -181,9 +169,6 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     struct Top: Decodable {
         let items: [Movie]
     }
-    
-    
-    
 }
 
 

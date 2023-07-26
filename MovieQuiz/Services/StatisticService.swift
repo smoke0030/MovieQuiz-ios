@@ -10,7 +10,16 @@ protocol StatisticService {
     
 }
 
+
 final class StatisticServiceImplementation: StatisticService {
+    
+    func getCurrentTime() -> String{
+        dateFormatter.dateFormat = "dd MMMM yyyy HH:mm:ss"
+        let currentDate = dateFormatter.string(from: Date())
+        return currentDate
+    }
+    
+     let dateFormatter = DateFormatter()
     
     private let userDefaults = UserDefaults.standard
     
@@ -19,10 +28,11 @@ final class StatisticServiceImplementation: StatisticService {
     }
     
     var bestGame: GameRecord  {
+        
         get {
             guard let data = userDefaults.data(forKey: Keys.bestGame.rawValue),
                   let record = try? JSONDecoder().decode(GameRecord.self, from: data) else {
-                return .init(correct: 0, total: 0, date: Date())
+                return .init(correct: 0, total: 0, date: getCurrentTime())
             }
             
             return record
@@ -34,6 +44,7 @@ final class StatisticServiceImplementation: StatisticService {
             }
             userDefaults.set(data, forKey: Keys.bestGame.rawValue)
         }
+        
         
     }
     
@@ -64,12 +75,12 @@ final class StatisticServiceImplementation: StatisticService {
     func store(correct count: Int, total amount: Int) {
         gamesCount += 1
         score += count
-        
-        let currentGameRecord = GameRecord(correct: count, total: amount, date: Date())
+        let currentGameRecord = GameRecord(correct: count, total: amount, date: getCurrentTime())
         let lastGameRecord = bestGame
         if lastGameRecord < currentGameRecord {
             bestGame = currentGameRecord
         }
+        
         
     }
 
