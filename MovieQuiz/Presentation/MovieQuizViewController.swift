@@ -128,7 +128,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
                 let bestGame = statisticService.bestGame
                 
                 
-                let text = "Ваш результат: \(correctAnswers) / 10\n" +
+                let text = "Ваш результат: \(correctAnswers)/10\n" +
                 "Количество сыгранных игр: \(statisticService.gamesCount)\n" +
                 "Рекордная игра: \(bestGame.correct)/\(bestGame.total) \(bestGame.date)\n" +
                 "Средняя точность: \(String(format: "%.2f", statisticService.totalAccuracy))%"

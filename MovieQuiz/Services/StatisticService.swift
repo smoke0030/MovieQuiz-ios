@@ -10,7 +10,6 @@ protocol StatisticService {
     
 }
 
-
 final class StatisticServiceImplementation: StatisticService {
     
     private let userDefaults = UserDefaults.standard
@@ -36,7 +35,6 @@ final class StatisticServiceImplementation: StatisticService {
             }
             userDefaults.set(data, forKey: Keys.bestGame.rawValue)
         }
-        
         
     }
     
