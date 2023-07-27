@@ -8,7 +8,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     private var correctAnswers = 0
     //переменная количества вопросов
     private let questionsAmount = 10
-    //обращение к протоволу фабрики вопросов
+    //обращение к протоколу фабрики вопросов
     private var questionFactory: QuestionFactoryProtocol?
     //текущий вопрос
     private var currentQuestion: QuizQuestion?
@@ -30,11 +30,16 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         questionFactory = QuestionFactory(delegate: self)
         questionFactory?.requestNextQuestion()
         statisticService = StatisticServiceImplementation()
+        
+        var documentsURl = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+        let fileName = "top250MoviesIMDB.json"
+        documentsURl.appendPathComponent(fileName)
+        let jsonString = try? String(contentsOf: documentsURl)
+        guard let data = jsonString?.data(using: .utf8) else { return }
+        let result = try? JSONDecoder().decode(Top.self, from: data)
     }
     
     // MARK: - QuestionFactoryDelegate
-    
-    
     
     func didReceiveNextQuestion(question: QuizQuestion?) {
         guard let question = question else {
@@ -58,7 +63,6 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
     }
     
-    
     @IBAction private func noButtonClicked(_ sender: UIButton) {
         guard let currentQuestion = currentQuestion else {
             return
@@ -66,8 +70,6 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         let givenAnswer = false
         showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
     }
-    
-    
     
     private func convert(model: QuizQuestion) -> QuizStepViewModel {
         let questionStep = QuizStepViewModel(
@@ -96,7 +98,6 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         let alertPresenter = AlertPresenter(alertModel: alertModel, viewController: self)
         alertPresenter.showAlert(alertModel)
     }
-    
     
     private func showAnswerResult(isCorrect: Bool) {
         if isCorrect == true {
@@ -127,7 +128,6 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
                 
                 let bestGame = statisticService.bestGame
                 
-                
                 let text = "Ваш результат: \(correctAnswers)/10\n" +
                 "Количество сыгранных игр: \(statisticService.gamesCount)\n" +
                 "Рекордная игра: \(bestGame.correct)/\(bestGame.total) \(bestGame.date)\n" +
@@ -153,85 +153,21 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         let name: String
         let asCharacter: String
     }
-
+    
     struct Movie: Codable {
-      let id: String
-      let rank: String
-      let title: String
-      let fullTitle: String
-      let year: String
-      let image: String
-      let crew: String
-      let imDbRating: String
-      let imDbRatingCount: String
+        let id: String
+        let rank: String
+        let title: String
+        let fullTitle: String
+        let year: String
+        let image: String
+        let crew: String
+        let imDbRating: String
+        let imDbRatingCount: String
     }
-
+    
     struct Top: Decodable {
         let items: [Movie]
     }
+    
 }
-
-
-/*
- Mock-данные
- 
- 
- Картинка: The Godfather
- Настоящий рейтинг: 9,2
- Вопрос: Рейтинг этого фильма больше чем 6?
- Ответ: ДА
-
-
- Картинка: The Dark Knight
- Настоящий рейтинг: 9
- Вопрос: Рейтинг этого фильма больше чем 6?
- Ответ: ДА
-
-
- Картинка: Kill Bill
- Настоящий рейтинг: 8,1
- Вопрос: Рейтинг этого фильма больше чем 6?
- Ответ: ДА
-
-
- Картинка: The Avengers
- Настоящий рейтинг: 8
- Вопрос: Рейтинг этого фильма больше чем 6?
- Ответ: ДА
-
-
- Картинка: Deadpool
- Настоящий рейтинг: 8
- Вопрос: Рейтинг этого фильма больше чем 6?
- Ответ: ДА
-
-
- Картинка: The Green Knight
- Настоящий рейтинг: 6,6
- Вопрос: Рейтинг этого фильма больше чем 6?
- Ответ: ДА
-
-
- Картинка: Old
- Настоящий рейтинг: 5,8
- Вопрос: Рейтинг этого фильма больше чем 6?
- Ответ: НЕТ
-
-
- Картинка: The Ice Age Adventures of Buck Wild
- Настоящий рейтинг: 4,3
- Вопрос: Рейтинг этого фильма больше чем 6?
- Ответ: НЕТ
-
-
- Картинка: Tesla
- Настоящий рейтинг: 5,1
- Вопрос: Рейтинг этого фильма больше чем 6?
- Ответ: НЕТ
-
-
- Картинка: Vivarium
- Настоящий рейтинг: 5,8
- Вопрос: Рейтинг этого фильма больше чем 6?
- Ответ: НЕТ
- */
