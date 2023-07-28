@@ -40,7 +40,7 @@ final class StatisticServiceImplementation: StatisticService {
     
     var totalAccuracy: Double {
         get {
-            return Double(score) / Double(gamesCount) * 10
+            gamesCount != 0 ? Double(score) / Double(gamesCount) * 10 : 0
         }
     }
     

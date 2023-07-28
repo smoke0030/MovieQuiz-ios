@@ -2,23 +2,50 @@ import UIKit
 import Foundation
 
 final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
-    //переменная с индексом текущего вопроса
-    var currentQuestionIndex = 0
-    //переменная со счетчиком правильных ответов
-    private var correctAnswers = 0
-    //переменная количества вопросов
-    private let questionsAmount = 10
-    //обращение к протоколу фабрики вопросов
-    private var questionFactory: QuestionFactoryProtocol?
-    //текущий вопрос
-    private var currentQuestion: QuizQuestion?
-    private var statisticService: StatisticService?
     
-    @IBOutlet var imageView: UIImageView!
+    // MARK: - IBOutlet
+    
+    @IBOutlet private var imageView: UIImageView!
     @IBOutlet private var counterLabel: UILabel!
     @IBOutlet private var textLabel: UILabel!
     @IBOutlet weak var noButtonLabel: UIButton!
     @IBOutlet weak var yesButtonLabel: UIButton!
+    
+    struct Actor: Codable {
+        let id: String
+        let image: String
+        let name: String
+        let asCharacter: String
+    }
+    
+    struct Movie: Codable {
+        let id: String
+        let rank: String
+        let title: String
+        let fullTitle: String
+        let year: String
+        let image: String
+        let crew: String
+        let imDbRating: String
+        let imDbRatingCount: String
+    }
+    
+    struct Top: Decodable {
+        let items: [Movie]
+    }
+    // MARK: - Private var's
+    
+    ///переменная с индексом текущего вопроса
+    private var currentQuestionIndex = 0
+    ///переменная со счетчиком правильных ответов
+    private var correctAnswers = 0
+    ///переменная количества вопросов
+    private let questionsAmount = 10
+    ///обращение к протоколу фабрики вопросов
+    private var questionFactory: QuestionFactoryProtocol?
+    ///текущий вопрос
+    private var currentQuestion: QuizQuestion?
+    private var statisticService: StatisticService = StatisticServiceImplementation()
     
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return .lightContent
@@ -29,17 +56,8 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         imageView.layer.cornerRadius = 20
         questionFactory = QuestionFactory(delegate: self)
         questionFactory?.requestNextQuestion()
-        statisticService = StatisticServiceImplementation()
         
-        var documentsURl = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
-        let fileName = "top250MoviesIMDB.json"
-        documentsURl.appendPathComponent(fileName)
-        let jsonString = try? String(contentsOf: documentsURl)
-        guard let data = jsonString?.data(using: .utf8) else { return }
-        let result = try? JSONDecoder().decode(Top.self, from: data)
     }
-    
-    // MARK: - QuestionFactoryDelegate
     
     func didReceiveNextQuestion(question: QuizQuestion?) {
         guard let question = question else {
@@ -55,21 +73,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         }
     }
     
-    @IBAction private func yesButtonClicked(_ sender: UIButton) {
-        guard let currentQuestion = currentQuestion else {
-            return
-        }
-        let givenAnswer = true
-        showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
-    }
-    
-    @IBAction private func noButtonClicked(_ sender: UIButton) {
-        guard let currentQuestion = currentQuestion else {
-            return
-        }
-        let givenAnswer = false
-        showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
-    }
+    // MARK: - Private Methods
     
     private func convert(model: QuizQuestion) -> QuizStepViewModel {
         let questionStep = QuizStepViewModel(
@@ -85,10 +89,10 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     }
     
     private func show(quiz result: QuizResultsViewModel) {
-        let completion = {
-            self.currentQuestionIndex = 0
-            self.correctAnswers = 0
-            self.questionFactory?.requestNextQuestion()
+        let completion = { [weak self] in
+            self?.currentQuestionIndex = 0
+            self?.correctAnswers = 0
+            self?.questionFactory?.requestNextQuestion()
         }
         let alertModel = AlertModel(
             title: result.title,
@@ -122,24 +126,23 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     private func showNextQuestionOrResult() {
         if currentQuestionIndex == questionsAmount - 1 {
             
-            if let statisticService = statisticService {
-                
                 statisticService.store(correct: correctAnswers, total: questionsAmount)
                 
                 let bestGame = statisticService.bestGame
                 
-                let text = "Ваш результат: \(correctAnswers)/10\n" +
-                "Количество сыгранных игр: \(statisticService.gamesCount)\n" +
-                "Рекордная игра: \(bestGame.correct)/\(bestGame.total) \(bestGame.date)\n" +
-                "Средняя точность: \(String(format: "%.2f", statisticService.totalAccuracy))%"
-            
+                let text = """
+Ваш результат: \(correctAnswers)/10
+Количество сыгранных игр: \(statisticService.gamesCount)
+Рекордная игра: \(bestGame.correct)/\(bestGame.total) \(bestGame.date)
+Средняя точность: \(String(format: "%.2f", statisticService.totalAccuracy))%
+"""
             
             let viewModel = QuizResultsViewModel(
                            title: "Этот раунд окончен!",
                             text: text,
                           buttonText: "Сыграть ещё раз")
                        show(quiz: viewModel)
-            }
+            
         } else {
             currentQuestionIndex += 1
             questionFactory?.requestNextQuestion()
@@ -147,27 +150,22 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         }
     }
     
-    struct Actor: Codable {
-        let id: String
-        let image: String
-        let name: String
-        let asCharacter: String
+    // MARK: - IBAction
+    
+    @IBAction private func yesButtonClicked(_ sender: UIButton) {
+        guard let currentQuestion = currentQuestion else {
+            return
+        }
+        let givenAnswer = true
+        showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
     }
     
-    struct Movie: Codable {
-        let id: String
-        let rank: String
-        let title: String
-        let fullTitle: String
-        let year: String
-        let image: String
-        let crew: String
-        let imDbRating: String
-        let imDbRatingCount: String
-    }
-    
-    struct Top: Decodable {
-        let items: [Movie]
+    @IBAction private func noButtonClicked(_ sender: UIButton) {
+        guard let currentQuestion = currentQuestion else {
+            return
+        }
+        let givenAnswer = false
+        showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
     }
     
 }
