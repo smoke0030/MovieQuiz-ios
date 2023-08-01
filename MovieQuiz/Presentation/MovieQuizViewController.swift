@@ -3,8 +3,6 @@ import Foundation
 
 final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate{
     
-    
-    
     // MARK: - IBOutlet
     
     @IBOutlet private var imageView: UIImageView!
@@ -74,7 +72,22 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate{
         
     }
     
-    func sendFirstRequest() {
+    func didReceiveNextQuestion(question: QuizQuestion?) {
+        guard let question = question else {
+            return
+        }
+        
+        currentQuestion = question
+        let viewModel = convert(model: question)
+        show(quiz: viewModel)
+        
+        DispatchQueue.main.async { [weak self] in
+            self?.show(quiz: viewModel)
+        }
+    }
+    
+    // MARK: - Private Methods
+    private func sendFirstRequest() {
         ///проверяем является ли строка адресом
         guard let url = URL(string: "https://imdb-api.com/en/API/MostPopularTVs/k_zcuw1ytf") else { return }
         ///создаем запрос
@@ -102,22 +115,6 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate{
         let alertPresenter = AlertPresenter(alertModel: model, viewController: self)
         alertPresenter.showAlert(model)
     }
-    
-    func didReceiveNextQuestion(question: QuizQuestion?) {
-        guard let question = question else {
-            return
-        }
-        
-        currentQuestion = question
-        let viewModel = convert(model: question)
-        show(quiz: viewModel)
-        
-        DispatchQueue.main.async { [weak self] in
-            self?.show(quiz: viewModel)
-        }
-    }
-    
-    // MARK: - Private Methods
     
     private func convert(model: QuizQuestion) -> QuizStepViewModel {
         return QuizStepViewModel(
