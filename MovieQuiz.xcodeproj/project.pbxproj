@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		842056202A78FD0500BBEFF3 /* NetworkClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8420561F2A78FD0500BBEFF3 /* NetworkClient.swift */; };
+		842056222A78FEBC00BBEFF3 /* MostPopularMovies.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842056212A78FEBC00BBEFF3 /* MostPopularMovies.swift */; };
+		842056242A78FFAB00BBEFF3 /* MoviesLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842056232A78FFAB00BBEFF3 /* MoviesLoader.swift */; };
 		843B55572A4775CE0026BD54 /* YS Display-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 843B55552A4775CE0026BD54 /* YS Display-Bold.ttf */; };
 		843B55582A4775CE0026BD54 /* YS Display-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 843B55562A4775CE0026BD54 /* YS Display-Medium.ttf */; };
 		847FE3B12A67CA1D003F6BAC /* QuestionFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 847FE3B02A67CA1D003F6BAC /* QuestionFactory.swift */; };
@@ -31,6 +34,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		8420561F2A78FD0500BBEFF3 /* NetworkClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkClient.swift; sourceTree = "<group>"; };
+		842056212A78FEBC00BBEFF3 /* MostPopularMovies.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MostPopularMovies.swift; sourceTree = "<group>"; };
+		842056232A78FFAB00BBEFF3 /* MoviesLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoviesLoader.swift; sourceTree = "<group>"; };
 		843B55552A4775CE0026BD54 /* YS Display-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "YS Display-Bold.ttf"; sourceTree = "<group>"; };
 		843B55562A4775CE0026BD54 /* YS Display-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "YS Display-Medium.ttf"; sourceTree = "<group>"; };
 		847FE3B02A67CA1D003F6BAC /* QuestionFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuestionFactory.swift; sourceTree = "<group>"; };
@@ -83,6 +89,8 @@
 				84B28EF42A68068B001EE0B0 /* QuestionFactoryProtocol.swift */,
 				84B28EF62A68645B001EE0B0 /* QuestionFactoryDelegate.swift */,
 				84C47AC52A6FE82E000FE5EA /* StatisticService.swift */,
+				8420561F2A78FD0500BBEFF3 /* NetworkClient.swift */,
+				842056232A78FFAB00BBEFF3 /* MoviesLoader.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -95,6 +103,7 @@
 				847FE3B72A67CD11003F6BAC /* QuizQuestion.swift */,
 				84B28EFA2A6912C1001EE0B0 /* AlertModel.swift */,
 				84C47AC72A7105B9000FE5EA /* GameRecord.swift */,
+				842056212A78FEBC00BBEFF3 /* MostPopularMovies.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -237,17 +246,20 @@
 				AD5EE5DE284D7887003966EF /* UIColor+Extensions.swift in Sources */,
 				84B28EFD2A6912D3001EE0B0 /* AlertPresenter.swift in Sources */,
 				84B28EFB2A6912C1001EE0B0 /* AlertModel.swift in Sources */,
+				842056222A78FEBC00BBEFF3 /* MostPopularMovies.swift in Sources */,
 				AD7AFA552836189F00399704 /* Array+Extensions.swift in Sources */,
 				84C47AC82A7105B9000FE5EA /* GameRecord.swift in Sources */,
 				84B28EF52A68068B001EE0B0 /* QuestionFactoryProtocol.swift in Sources */,
 				84B28EF72A68645B001EE0B0 /* QuestionFactoryDelegate.swift in Sources */,
 				AD1ABAB62831907B00B3E448 /* MovieQuizViewController.swift in Sources */,
+				842056202A78FD0500BBEFF3 /* NetworkClient.swift in Sources */,
 				84C47AC62A6FE82E000FE5EA /* StatisticService.swift in Sources */,
 				847FE3B42A67CCF1003F6BAC /* QuizStepViewModel.swift in Sources */,
 				847FE3B82A67CD11003F6BAC /* QuizQuestion.swift in Sources */,
 				847FE3B12A67CA1D003F6BAC /* QuestionFactory.swift in Sources */,
 				AD77F5742857F8810062FB14 /* Date+Extensions.swift in Sources */,
 				AD1ABAB22831907B00B3E448 /* AppDelegate.swift in Sources */,
+				842056242A78FFAB00BBEFF3 /* MoviesLoader.swift in Sources */,
 				847FE3B62A67CD04003F6BAC /* QuizResultsViewModel.swift in Sources */,
 				AD1ABAB42831907B00B3E448 /* SceneDelegate.swift in Sources */,
 			);
