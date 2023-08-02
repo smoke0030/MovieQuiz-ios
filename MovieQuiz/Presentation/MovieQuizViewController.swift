@@ -104,6 +104,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate{
     private func showNetworkError(message: String) {
         let complition = { [weak self] in
             guard let self = self else { return }
+            self.questionFactory?.loadData()
             self.currentQuestionIndex = 0
             self.correctAnswers = 0
             self.questionFactory?.requestNextQuestion()
