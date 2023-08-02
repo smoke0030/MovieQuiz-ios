@@ -54,11 +54,12 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate{
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        textLabel.text = "Hello"
         imageView.layer.cornerRadius = 20
         questionFactory = QuestionFactory(moviesLoader: MoviesLoader(), delegate: self)
-        questionFactory?.requestNextQuestion()
         showLoadingIndicator()
         questionFactory?.loadData()
+        questionFactory?.requestNextQuestion()
         
     }
     
