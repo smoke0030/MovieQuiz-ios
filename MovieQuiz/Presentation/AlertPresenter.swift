@@ -22,7 +22,7 @@ class AlertPresenter {
         guard let viewController = viewController else { return }
         alert.addAction(action)
         viewController.present(alert, animated: true, completion: nil)
-       
+        
     }
 }
 
