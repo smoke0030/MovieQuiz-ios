@@ -52,6 +52,7 @@ final class MovieQuizViewController: UIViewController,
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        presenter.viewController = self
         textLabel.text = "Hello"
         imageView.layer.cornerRadius = 20
         questionFactory = QuestionFactory(moviesLoader: MoviesLoader(), delegate: self)
@@ -139,7 +140,7 @@ final class MovieQuizViewController: UIViewController,
         alertPresenter.showAlert(alertModel)
     }
     
-    private func showAnswerResult(isCorrect: Bool) {
+    func showAnswerResult(isCorrect: Bool) {
         if isCorrect == true {
             correctAnswers += 1
         }
@@ -189,19 +190,13 @@ final class MovieQuizViewController: UIViewController,
     // MARK: - IBAction
     
     @IBAction private func yesButtonClicked(_ sender: UIButton) {
-        guard let currentQuestion = currentQuestion else {
-            return
-        }
-        let givenAnswer = true
-        showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
+        presenter.currentQuestion = currentQuestion
+        presenter.yesButtonClicked()
     }
     
     @IBAction private func noButtonClicked(_ sender: UIButton) {
-        guard let currentQuestion = currentQuestion else {
-            return
-        }
-        let givenAnswer = false
-        showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
+        presenter.currentQuestion = currentQuestion
+        presenter.noButtonClicked()
     }
     
 }
