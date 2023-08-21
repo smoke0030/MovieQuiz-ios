@@ -1,7 +1,7 @@
 import UIKit
 
 class AlertPresenter {
-    
+
     let alertModel: AlertModel
     weak var viewController: UIViewController?
     init(alertModel: AlertModel, viewController: UIViewController) {
