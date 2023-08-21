@@ -42,7 +42,6 @@ final class MovieQuizViewController: UIViewController,
     ///переменная количества вопросов
     private var questionFactory: QuestionFactoryProtocol?
     ///текущий вопрос
-    private var currentQuestion: QuizQuestion?
     private var statisticService: StatisticService = StatisticServiceImplementation()
     private let presenter = MovieQuizPresenter()
     
@@ -74,17 +73,7 @@ final class MovieQuizViewController: UIViewController,
     }
     
     func didReceiveNextQuestion(question: QuizQuestion?) {
-        guard let question = question else {
-            return
-        }
-        
-        currentQuestion = question
-        let viewModel = presenter.convert(model: question)
-        show(quiz: viewModel)
-        
-        DispatchQueue.main.async { [weak self] in
-            self?.show(quiz: viewModel)
-        }
+        presenter.didReceiveNextQuestion(question: question)
     }
     
     // MARK: - Private Methods
@@ -119,13 +108,13 @@ final class MovieQuizViewController: UIViewController,
         alertPresenter.showAlert(model)
     }
     
-    private func show(quiz step: QuizStepViewModel) {
+    func show(quiz step: QuizStepViewModel) {
         imageView.image = step.image
         textLabel.text = step.question
         counterLabel.text = step.questionNumber
     }
     
-    private func show(quiz result: QuizResultsViewModel) {
+    func show(quiz result: QuizResultsViewModel) {
         let completion = { [weak self] in
             self?.presenter.resetQuestionIndex()
             self?.correctAnswers = 0
@@ -152,7 +141,9 @@ final class MovieQuizViewController: UIViewController,
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
             guard let self = self else { return }
-            self.showNextQuestionOrResult()
+            self.presenter.showNextQuestionOrResult()
+            self.presenter.correctAnswers = self.correctAnswers
+            self.presenter.questionFactory = self.questionFactory
             self.imageView.layer.borderWidth = 0
             self.imageView.layer.borderColor = nil
             self.yesButtonLabel.isEnabled = true
@@ -190,12 +181,10 @@ final class MovieQuizViewController: UIViewController,
     // MARK: - IBAction
     
     @IBAction private func yesButtonClicked(_ sender: UIButton) {
-        presenter.currentQuestion = currentQuestion
         presenter.yesButtonClicked()
     }
     
     @IBAction private func noButtonClicked(_ sender: UIButton) {
-        presenter.currentQuestion = currentQuestion
         presenter.noButtonClicked()
     }
     
