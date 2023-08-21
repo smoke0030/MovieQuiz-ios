@@ -1,7 +1,7 @@
 import UIKit
 import Foundation
 
-final class MovieQuizViewController: UIViewController {
+final class MovieQuizViewController: UIViewController, MovieQuizViewControllerProtocol {
     
     // MARK: - IBOutlet
     
@@ -44,7 +44,7 @@ final class MovieQuizViewController: UIViewController {
     
     //MARK: methods
     
-    func higlihtImageBorder(isCorrectAnswer: Bool) {
+    func higlightImageBorder(isCorrectAnswer: Bool) {
         yesButtonLabel.isEnabled = false
         noButtonLabel.isEnabled = false
         imageView.layer.masksToBounds = true
