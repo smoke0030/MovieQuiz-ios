@@ -73,7 +73,7 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
         }
     }
     
-    func ProceedToNextQuestionOrResult() {
+    private func ProceedToNextQuestionOrResult() {
         if self.isLastQuestion() {
             
             let message = makeResultsMessage()
@@ -93,7 +93,7 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
         }
     }
     
-    func proceedWithAnswer(isCorrect: Bool) {
+    private func proceedWithAnswer(isCorrect: Bool) {
         didAnswer(isCorrectAnswer: isCorrect )
         viewController?.higlihtImageBorder(isCorrectAnswer: isCorrect)
         
