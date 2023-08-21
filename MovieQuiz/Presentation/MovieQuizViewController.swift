@@ -5,38 +5,15 @@ final class MovieQuizViewController: UIViewController {
     
     // MARK: - IBOutlet
     
-    @IBOutlet private var imageView: UIImageView!
+    @IBOutlet var imageView: UIImageView!
     @IBOutlet private var counterLabel: UILabel!
     @IBOutlet private var textLabel: UILabel!
     @IBOutlet weak var noButtonLabel: UIButton!
     @IBOutlet weak var yesButtonLabel: UIButton!
     @IBOutlet private var activityIndicator: UIActivityIndicatorView!
     
-    struct Actor: Codable {
-        let id: String
-        let image: String
-        let name: String
-        let asCharacter: String
-    }
-    
-    struct Movie: Codable {
-        let id: String
-        let rank: String
-        let title: String
-        let fullTitle: String
-        let year: String
-        let image: String
-        let crew: String
-        let imDbRating: String
-        let imDbRatingCount: String
-    }
-    
-    struct Top: Decodable {
-        let items: [Movie]
-    }
     // MARK: - Private var's
-    ///текущий вопрос
-    private var statisticService: StatisticService = StatisticServiceImplementation()
+    
     private var presenter: MovieQuizPresenter!
     
     override var preferredStatusBarStyle: UIStatusBarStyle {
@@ -46,7 +23,6 @@ final class MovieQuizViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         presenter = MovieQuizPresenter(viewController: self)
-        presenter.viewController = self
         textLabel.text = "Hello"
         imageView.layer.cornerRadius = 20
         activityIndicator.hidesWhenStopped = true
@@ -66,9 +42,27 @@ final class MovieQuizViewController: UIViewController {
         task.resume()
     }
     
+    //MARK: methods
+    
+    func higlihtImageBorder(isCorrectAnswer: Bool) {
+        yesButtonLabel.isEnabled = false
+        noButtonLabel.isEnabled = false
+        imageView.layer.masksToBounds = true
+        imageView.layer.borderWidth = 8
+        imageView.layer.borderColor = isCorrectAnswer ? UIColor.ypGreen.cgColor : UIColor.ypRed.cgColor
+    }
+    
+    func deselectImageBorder() {
+        imageView.layer.borderWidth = 0
+        imageView.layer.borderColor = nil
+        yesButtonLabel.isEnabled = true
+        noButtonLabel.isEnabled = true
+    }
+    
     func showLoadingIndicator() {
         activityIndicator.startAnimating()
     }
+    
     func hideLoadingIndicator() {
         activityIndicator.isHidden = true
     }
@@ -94,63 +88,23 @@ final class MovieQuizViewController: UIViewController {
     }
     
     func show(quiz result: QuizResultsViewModel) {
+        let message = presenter.makeResultsMessage()
+        
         let completion = { [weak self] in
             guard let self = self else { return }
             self.presenter.restartGame()
             
         }
+        
         let alertModel = AlertModel(
             title: result.title,
-            message: result.text,
+            message: message,
             buttonText: result.buttonText,
             completion: completion)
         let alertPresenter = AlertPresenter(alertModel: alertModel, viewController: self)
         alertPresenter.showAlert(alertModel)
     }
     
-    func showAnswerResult(isCorrect: Bool) {
-        presenter.didAnswer(isCorrectAnswer: isCorrect )
-        yesButtonLabel.isEnabled = false
-        noButtonLabel.isEnabled = false
-        imageView.layer.masksToBounds = true
-        imageView.layer.borderWidth = 8
-        imageView.layer.borderColor = isCorrect ? UIColor.ypGreen.cgColor : UIColor.ypRed.cgColor
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
-            guard let self = self else { return }
-            self.presenter.showNextQuestionOrResult()
-            self.imageView.layer.borderWidth = 0
-            self.imageView.layer.borderColor = nil
-            self.yesButtonLabel.isEnabled = true
-            self.noButtonLabel.isEnabled = true
-        }
-    }
-    
-    private func showNextQuestionOrResult() {
-        if presenter.isLastQuestion() {
-            
-            statisticService.store(correct: presenter.correctAnswers, total: presenter.questionsAmount)
-            
-            let bestGame = statisticService.bestGame
-            
-            let text = """
-Ваш результат: \(presenter.correctAnswers)/10
-Количество сыгранных игр: \(statisticService.gamesCount)
-Рекордная игра: \(bestGame.correct)/\(bestGame.total) \(bestGame.date)
-Средняя точность: \(String(format: "%.2f", statisticService.totalAccuracy))%
-"""
-            
-            let viewModel = QuizResultsViewModel(
-                title: "Этот раунд окончен!",
-                text: text,
-                buttonText: "Сыграть ещё раз")
-            show(quiz: viewModel)
-            
-        } else {
-            presenter.switchToNextQuestion()
-            
-        }
-    }
     
     // MARK: - IBAction
     
@@ -161,5 +115,7 @@ final class MovieQuizViewController: UIViewController {
     @IBAction private func noButtonClicked(_ sender: UIButton) {
         presenter.noButtonClicked()
     }
+    
+    
     
 }
