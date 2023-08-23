@@ -65,7 +65,6 @@ final class StatisticServiceImplementation: StatisticService {
     
     func store(correct count: Int, total amount: Int) {
         gamesCount += 1
-        print(gamesCount)
         score += count
         let currentGameRecord = GameRecord(correct: count, total: amount, date: Date().dateTimeString)
         let lastGameRecord = bestGame
