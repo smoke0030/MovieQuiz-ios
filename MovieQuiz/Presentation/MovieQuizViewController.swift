@@ -22,24 +22,12 @@ final class MovieQuizViewController: UIViewController, MovieQuizViewControllerPr
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        presenter = MovieQuizPresenter(viewController: self)
+        presenter = MovieQuizPresenter(viewController: self, statisticcService: StatisticServiceImplementation())
         textLabel.text = "Hello"
         imageView.layer.cornerRadius = 20
         activityIndicator.hidesWhenStopped = true
         showLoadingIndicator()
         
-    }
-    
-    // MARK: - Private Methods
-    private func sendFirstRequest() {
-        ///проверяем является ли строка адресом
-        guard let url = URL(string: "https://imdb-api.com/en/API/MostPopularTVs/k_zcuw1ytf") else { return }
-        ///создаем запрос
-        let request = URLRequest(url: url)
-        let task: URLSessionDataTask = URLSession.shared.dataTask(with: request) {data, response,error in
-            
-        }
-        task.resume()
     }
     
     //MARK: methods
@@ -68,17 +56,8 @@ final class MovieQuizViewController: UIViewController, MovieQuizViewControllerPr
     }
     
     func showNetworkError(message: String) {
-        let completion = { [weak self] in
-            guard let self = self else { return }
-            self.presenter.restartGame()
-            
-        }
-        let model = AlertModel(title: "Ошибка",
-                               message: message,
-                               buttonText: "Попробовать еще раз",
-                               completion: completion)
-        let alertPresenter = AlertPresenter(alertModel: model, viewController: self)
-        alertPresenter.showAlert(model)
+        hideLoadingIndicator()
+        presenter.showNetworkError(message: message)
     }
     
     func show(quiz step: QuizStepViewModel) {
@@ -88,21 +67,7 @@ final class MovieQuizViewController: UIViewController, MovieQuizViewControllerPr
     }
     
     func show(quiz result: QuizResultsViewModel) {
-        let message = presenter.makeResultsMessage()
-        
-        let completion = { [weak self] in
-            guard let self = self else { return }
-            self.presenter.restartGame()
-            
-        }
-        
-        let alertModel = AlertModel(
-            title: result.title,
-            message: message,
-            buttonText: result.buttonText,
-            completion: completion)
-        let alertPresenter = AlertPresenter(alertModel: alertModel, viewController: self)
-        alertPresenter.showAlert(alertModel)
+        presenter.show(quiz: result)
     }
     
     

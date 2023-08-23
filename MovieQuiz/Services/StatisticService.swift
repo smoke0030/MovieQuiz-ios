@@ -56,6 +56,7 @@ final class StatisticServiceImplementation: StatisticService {
     var gamesCount: Int {
         get {
             userDefaults.integer(forKey: Keys.gamesCount.rawValue)
+            
         }
         set {
             userDefaults.set(newValue, forKey: Keys.gamesCount.rawValue)
@@ -64,6 +65,7 @@ final class StatisticServiceImplementation: StatisticService {
     
     func store(correct count: Int, total amount: Int) {
         gamesCount += 1
+        print(gamesCount)
         score += count
         let currentGameRecord = GameRecord(correct: count, total: amount, date: Date().dateTimeString)
         let lastGameRecord = bestGame
