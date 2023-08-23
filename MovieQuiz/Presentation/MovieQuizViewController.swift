@@ -10,11 +10,11 @@ final class MovieQuizViewController: UIViewController, MovieQuizViewControllerPr
     @IBOutlet private var textLabel: UILabel!
     @IBOutlet weak var noButtonLabel: UIButton!
     @IBOutlet weak var yesButtonLabel: UIButton!
-    @IBOutlet private var activityIndicator: UIActivityIndicatorView!
     
     // MARK: - Private var's
     
     private var presenter: MovieQuizPresenter!
+    private let activityIndicator = UIActivityIndicatorView(style: .medium)
     
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return .lightContent
@@ -22,15 +22,23 @@ final class MovieQuizViewController: UIViewController, MovieQuizViewControllerPr
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        presenter = MovieQuizPresenter(viewController: self, statisticcService: StatisticServiceImplementation())
+        let alertPresenter = AlertPresenter(viewController: self)
+        presenter = MovieQuizPresenter(viewController: self, alertPresenter: alertPresenter)
         textLabel.text = "Hello"
         imageView.layer.cornerRadius = 20
-        activityIndicator.hidesWhenStopped = true
-        showLoadingIndicator()
-        
+        centeringAndShowActivityIndicator()
     }
     
     //MARK: methods
+    func centeringAndShowActivityIndicator() {
+        imageView.addSubview(activityIndicator)
+        activityIndicator.translatesAutoresizingMaskIntoConstraints = false
+        activityIndicator.centerXAnchor.constraint(equalTo: imageView.centerXAnchor).isActive = true
+        activityIndicator.centerYAnchor.constraint(equalTo: imageView.centerYAnchor).isActive = true
+        activityIndicator.color = UIColor.ypGray
+        activityIndicator.hidesWhenStopped = true
+        showLoadingIndicator()
+    }
     
     func higlightImageBorder(isCorrectAnswer: Bool) {
         yesButtonLabel.isEnabled = false
@@ -56,7 +64,6 @@ final class MovieQuizViewController: UIViewController, MovieQuizViewControllerPr
     }
     
     func showNetworkError(message: String) {
-        hideLoadingIndicator()
         presenter.showNetworkError(message: message)
     }
     
@@ -69,7 +76,6 @@ final class MovieQuizViewController: UIViewController, MovieQuizViewControllerPr
     func show(quiz result: QuizResultsViewModel) {
         presenter.show(quiz: result)
     }
-    
     
     // MARK: - IBAction
     

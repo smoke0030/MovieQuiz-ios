@@ -1,4 +1,3 @@
-import Foundation
 import UIKit
 
 final class MovieQuizPresenter: QuestionFactoryDelegate {
@@ -12,14 +11,15 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
     private var statisticService: StatisticService?
     private var currentQuestion: QuizQuestion?
     private var questionFactory: QuestionFactoryProtocol?
-    private var viewController: MovieQuizViewControllerProtocol?
-    private var alertPresenter: AlertPresenter?
+    private var viewController: MovieQuizViewControllerProtocol
+    private var alertPresenter: AlertPresenterProtocol
     
-    init(viewController: MovieQuizViewControllerProtocol, statisticcService: StatisticService) {
+    lazy var message = makeResultsMessage()
+    
+    init(viewController: MovieQuizViewControllerProtocol, alertPresenter: AlertPresenterProtocol) {
         self.viewController = viewController
-        self.alertPresenter = AlertPresenter(viewController: viewController as! UIViewController)
+        self.alertPresenter = alertPresenter
         self.statisticService = StatisticServiceImplementation()
-        
         questionFactory = QuestionFactory(moviesLoader: MoviesLoader(), delegate: self)
         questionFactory?.loadData()
         viewController.showLoadingIndicator()
@@ -40,20 +40,20 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
         return resultMessage
     }
     
-    private func isLastQuestion() -> Bool {
+    func isLastQuestion() -> Bool {
         currentQuestionIndex == questionsAmount - 1
     }
     
     // MARK: QuestionFactoryDelegate
     
     func didLoadDataFromServer() {
-        viewController?.hideLoadingIndicator()
+        viewController.hideLoadingIndicator()
         questionFactory?.requestNextQuestion()
     }
     
     func didFailToLoadData(with error: Error) {
         let message = error.localizedDescription
-        viewController?.showNetworkError(message: message)
+        viewController.showNetworkError(message: message)
     }
     
     func convert(model: QuizQuestion) -> QuizStepViewModel {
@@ -74,7 +74,7 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
                                message: message,
                                buttonText: "Попробовать еще раз",
                                completion: completion)
-        let alertPresenter = AlertPresenter(viewController: self.viewController as! UIViewController)
+        
         alertPresenter.showAlert(model)
     }
     
@@ -87,37 +87,30 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
         let viewModel = convert(model: question)
         
         DispatchQueue.main.async { [weak self] in
-            self?.viewController?.show(quiz: viewModel)
+            self?.viewController.show(quiz: viewModel)
         }
     }
     
     private func proceedToNextQuestionOrResult() {
         if self.isLastQuestion() {
             
-            let message = makeResultsMessage()
-            
-            statisticService?.store(correct: correctAnswers, total: self.questionsAmount)
-            
             let viewModel = QuizResultsViewModel(
                 title: "Этот раунд окончен!",
                 text: message,
                 buttonText: "Сыграть ещё раз")
-            viewController?.show(quiz: viewModel)
+            viewController.show(quiz: viewModel)
             
         } else {
             switchToNextQuestion()
             questionFactory?.requestNextQuestion()
-            
         }
     }
     
     func show(quiz result: QuizResultsViewModel) {
-        let message = makeResultsMessage()
         
         let completion = { [weak self] in
             guard let self = self else { return }
             self.restartGame()
-            
         }
         
         let alertModel = AlertModel(
@@ -125,18 +118,17 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
             message: message,
             buttonText: result.buttonText,
             completion: completion)
-        let alertPresenter = AlertPresenter(viewController: viewController as! UIViewController)
         alertPresenter.showAlert(alertModel)
     }
     
     private func proceedWithAnswer(isCorrect: Bool) {
         didAnswer(isCorrectAnswer: isCorrect )
-        viewController?.higlightImageBorder(isCorrectAnswer: isCorrect)
+        viewController.higlightImageBorder(isCorrectAnswer: isCorrect)
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
             guard let self = self else { return }
             self.proceedToNextQuestionOrResult()
-            viewController?.deselectImageBorder()
+            viewController.deselectImageBorder()
         }
     }
     
@@ -168,7 +160,7 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
     }
     
     func didAnswer(isCorrectAnswer: Bool) {
-        if isCorrectAnswer == true {
+        if isCorrectAnswer {
             correctAnswers += 1
         }
     }

@@ -31,12 +31,21 @@ final class MovieQuizViewControllerMock: MovieQuizViewControllerProtocol {
     }
     
     
+    
+    
+}
+
+final class AlertPresenterMock: AlertPresenterProtocol {
+    func showAlert(_ alertModel: AlertModel) {
+        
+    }
 }
 
 final class MovieQuizPresenterTests: XCTestCase {
     func testPresenterConvertModel() throws {
         let viewControllerMock = MovieQuizViewControllerMock()
-        let sut = MovieQuizPresenter(viewController: viewControllerMock, statisticcService: StatisticServiceImplementation())
+        let alertPresenterMock = AlertPresenterMock()
+        let sut = MovieQuizPresenter(viewController: viewControllerMock, alertPresenter: alertPresenterMock)
         
         let emptyData = Data()
         let question = QuizQuestion(image: emptyData, text: "Question Text", correctAnswer: true)
