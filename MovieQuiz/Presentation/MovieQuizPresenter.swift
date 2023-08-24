@@ -11,18 +11,18 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
     private var statisticService: StatisticService?
     private var currentQuestion: QuizQuestion?
     private var questionFactory: QuestionFactoryProtocol?
-    private var viewController: MovieQuizViewControllerProtocol
+    private var view: MovieQuizViewControllerProtocol
     private var alertPresenter: AlertPresenterProtocol
     
     lazy var message = makeResultsMessage()
     
-    init(viewController: MovieQuizViewControllerProtocol, alertPresenter: AlertPresenterProtocol) {
-        self.viewController = viewController
+    init(view: MovieQuizViewControllerProtocol, alertPresenter: AlertPresenterProtocol) {
+        self.view = view
         self.alertPresenter = alertPresenter
         self.statisticService = StatisticServiceImplementation()
         questionFactory = QuestionFactory(moviesLoader: MoviesLoader(), delegate: self)
         questionFactory?.loadData()
-        viewController.showLoadingIndicator()
+        view.showLoadingIndicator()
     }
     
     func makeResultsMessage() -> String {
@@ -47,13 +47,13 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
     // MARK: QuestionFactoryDelegate
     
     func didLoadDataFromServer() {
-        viewController.hideLoadingIndicator()
+        view.hideLoadingIndicator()
         questionFactory?.requestNextQuestion()
     }
     
     func didFailToLoadData(with error: Error) {
         let message = error.localizedDescription
-        viewController.showNetworkError(message: message)
+        view.showNetworkError(message: message)
     }
     
     func convert(model: QuizQuestion) -> QuizStepViewModel {
@@ -87,7 +87,7 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
         let viewModel = convert(model: question)
         
         DispatchQueue.main.async { [weak self] in
-            self?.viewController.show(quiz: viewModel)
+            self?.view.show(quiz: viewModel)
         }
     }
     
@@ -98,7 +98,7 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
                 title: "Этот раунд окончен!",
                 text: message,
                 buttonText: "Сыграть ещё раз")
-            viewController.show(quiz: viewModel)
+            view.show(quiz: viewModel)
             
         } else {
             switchToNextQuestion()
@@ -123,12 +123,12 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
     
     private func proceedWithAnswer(isCorrect: Bool) {
         didAnswer(isCorrectAnswer: isCorrect )
-        viewController.higlightImageBorder(isCorrectAnswer: isCorrect)
+        view.higlightImageBorder(isCorrectAnswer: isCorrect)
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
             guard let self = self else { return }
             self.proceedToNextQuestionOrResult()
-            viewController.deselectImageBorder()
+            view.deselectImageBorder()
         }
     }
     

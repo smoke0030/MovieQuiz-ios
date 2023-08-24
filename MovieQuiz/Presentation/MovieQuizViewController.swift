@@ -23,14 +23,14 @@ final class MovieQuizViewController: UIViewController, MovieQuizViewControllerPr
     override func viewDidLoad() {
         super.viewDidLoad()
         let alertPresenter = AlertPresenter(viewController: self)
-        presenter = MovieQuizPresenter(viewController: self, alertPresenter: alertPresenter)
+        presenter = MovieQuizPresenter(view: self, alertPresenter: alertPresenter)
         textLabel.text = "Hello"
         imageView.layer.cornerRadius = 20
         centeringAndShowActivityIndicator()
     }
     
-    //MARK: methods
-    func centeringAndShowActivityIndicator() {
+    //MARK: private methods
+    private func centeringAndShowActivityIndicator() {
         imageView.addSubview(activityIndicator)
         activityIndicator.translatesAutoresizingMaskIntoConstraints = false
         activityIndicator.centerXAnchor.constraint(equalTo: imageView.centerXAnchor).isActive = true
@@ -39,6 +39,8 @@ final class MovieQuizViewController: UIViewController, MovieQuizViewControllerPr
         activityIndicator.hidesWhenStopped = true
         showLoadingIndicator()
     }
+    
+    //MARK: public methods
     
     func higlightImageBorder(isCorrectAnswer: Bool) {
         yesButtonLabel.isEnabled = false
