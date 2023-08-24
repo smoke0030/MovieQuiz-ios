@@ -1,11 +1,9 @@
 import UIKit
 
-class AlertPresenter {
-    
-    let alertModel: AlertModel
+final class AlertPresenter: AlertPresenterProtocol {
+
     weak var viewController: UIViewController?
-    init(alertModel: AlertModel, viewController: UIViewController) {
-        self.alertModel = alertModel
+    init(viewController: UIViewController) {
         self.viewController = viewController
     }
     
@@ -19,10 +17,11 @@ class AlertPresenter {
             alertModel.completion()
         }
         
+        alert.view.accessibilityIdentifier = "Alert"
         guard let viewController = viewController else { return }
         alert.addAction(action)
         viewController.present(alert, animated: true, completion: nil)
-       
+        
     }
 }
 
